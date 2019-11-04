@@ -1,0 +1,84 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.+"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
+
+plugins {
+    id 'com.jfrog.artifactory' version '4.10.0'
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
+}
+
+group 'com.cameraforensics'
+version '1.0.2'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
+    compile group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    implementation name: 'ffmpeg-0.6.4-SNAPSHOT'
+//    TODO: Update this when PR is merged https://github.com/bramp/ffmpeg-cli-wrapper/pull/203 
+//    compile group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.6.3'
+    
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// custom tasks for creating source/javadoc jars
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifactoryPublish {
+    dependsOn sourcesJar, javadocJar
+}
+
+// add javadoc/source jar tasks as artifacts
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    archives shadowJar
+}
+
+artifactory {
+    contextUrl = "${artifactoryUrl}"
+    publish {
+        repository {
+            repoKey = "libs-release-local"
+            username = "${artifactoryUsername}"
+            password = "${artifactoryPassword}"
+        }
+        defaults {
+            publishConfigs('archives', 'published')
+            publishArtifacts = true
+            properties = ['qa.level': 'basic', 'dev.team' : 'core']
+            publishPom = true
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-release'
+            maven = true
+        }
+    }
+}

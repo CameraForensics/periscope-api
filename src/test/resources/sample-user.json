@@ -1,0 +1,39 @@
+{
+  "user": {
+    "class_name": "User",
+    "id": "1PXEdmmkWBqQe",
+    "created_at": "2017-04-01T17:22:55.789129792Z",
+    "is_beta_user": false,
+    "is_employee": false,
+    "is_twitter_verified": true,
+    "twitter_screen_name": "p_c_media_sa",
+    "username": "p_c_media_sa",
+    "display_name": "مركز الإنتاج",
+    "description": "حساب رسمي | يعرض أعمال الاستديوهات التعليمية بإدارات التعليم بالمملكة العربية السعودية إشراف الإدارة العامة للإعلام والاتصال بوزارة التعليم pcmedia@mov.gov.sa",
+    "profile_image_urls": [
+      {
+        "url": "http://pbs.twimg.com/profile_images/884081370766725121/rb7Y4ZpX_reasonably_small.jpg",
+        "ssl_url": "https://pbs.twimg.com/profile_images/884081370766725121/rb7Y4ZpX_reasonably_small.jpg",
+        "width": 128,
+        "height": 128
+      },
+      {
+        "url": "http://pbs.twimg.com/profile_images/884081370766725121/rb7Y4ZpX_200x200.jpg",
+        "ssl_url": "https://pbs.twimg.com/profile_images/884081370766725121/rb7Y4ZpX_200x200.jpg",
+        "width": 200,
+        "height": 200
+      },
+      {
+        "url": "http://pbs.twimg.com/profile_images/884081370766725121/rb7Y4ZpX_400x400.jpg",
+        "ssl_url": "https://pbs.twimg.com/profile_images/884081370766725121/rb7Y4ZpX_400x400.jpg",
+        "width": 400,
+        "height": 400
+      }
+    ],
+    "twitter_id": "155295929",
+    "initials": "",
+    "n_followers": 2432,
+    "n_following": 4,
+    "n_hearts": 1985451
+  }
+}
