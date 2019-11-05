@@ -36,16 +36,12 @@ public class Periscope {
         FFmpeg ffmpeg = new FFmpeg();
         ffmpeg.run(args);
 
-        byte[] videoData = FileUtils.readFileToByteArray(file.getAbsoluteFile());
+        byte[] videoData = FileUtils.readFileToByteArray(file);
 
         log.info("Video retrieval complete. Extracting frame data...");
 
-        args = Arrays.asList(file.getAbsolutePath(), "-show_frames", "-of", "json");
-
         FFprobe ffprobe = new FFprobe();
-        ffprobe.run(args);
-
-        FFmpegProbeResult probeResult = ffprobe.probe("input.mp4");
+        FFmpegProbeResult probeResult = ffprobe.probe(file.getAbsolutePath());
 
         return new VideoContent(file, videoData, probeResult);
     }
