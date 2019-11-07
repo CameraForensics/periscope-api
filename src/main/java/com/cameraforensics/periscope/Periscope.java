@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
@@ -36,14 +37,12 @@ public class Periscope {
         FFmpeg ffmpeg = new FFmpeg();
         ffmpeg.run(args);
 
-        byte[] videoData = FileUtils.readFileToByteArray(file);
-
         log.info("Video retrieval complete. Extracting frame data...");
 
         FFprobe ffprobe = new FFprobe();
         FFmpegProbeResult probeResult = ffprobe.probe(file.getAbsolutePath());
 
-        return new VideoContent(file, videoData, probeResult);
+        return new VideoContent(file, probeResult);
     }
 
     public Video accessVideoPublic(final String broadcastId) throws IOException {
@@ -103,8 +102,14 @@ public class Periscope {
     private String processResponse(Response response) throws IOException {
         log.debug("Response: successful={} code={}", response.isSuccessful(), response.code());
         if (response.isSuccessful() && response.code() >= 200 && response.code() < 300) {
-
-            GZIPInputStream is = new GZIPInputStream(response.body().byteStream());
+            String contentEncoding = response.header("Content-Encoding");
+            InputStream is;
+            if (contentEncoding != null && !contentEncoding.contains("gzip")) {
+                is = response.body().byteStream();
+            }
+            else {
+                is = new GZIPInputStream(response.body().byteStream());
+            }
             String json = IOUtils.toString(is, "UTF-8");
 
             return json;

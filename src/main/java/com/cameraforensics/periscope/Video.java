@@ -13,6 +13,12 @@ public class Video implements Serializable {
     @JsonProperty("replay_url")
     private String replayUrl;
 
+    @JsonProperty("hls_url")
+    private String hlsUrl;
+
+    @JsonProperty("https_hls_url")
+    private String httpsHlsUrl;
+
     @JsonProperty("hls_is_encrypted")
     private Boolean hlsIsEncrypted;
 
@@ -52,6 +58,22 @@ public class Video implements Serializable {
 
     public void setReplayUrl(String replayUrl) {
         this.replayUrl = replayUrl;
+    }
+
+    public String getHlsUrl() {
+        return hlsUrl;
+    }
+
+    public void setHlsUrl(String hlsUrl) {
+        this.hlsUrl = hlsUrl;
+    }
+
+    public String getHttpsHlsUrl() {
+        return httpsHlsUrl;
+    }
+
+    public void setHttpsHlsUrl(String httpsHlsUrl) {
+        this.httpsHlsUrl = httpsHlsUrl;
     }
 
     public Boolean getHlsIsEncrypted() {

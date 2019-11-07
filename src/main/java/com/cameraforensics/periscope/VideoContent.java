@@ -1,20 +1,19 @@
 package com.cameraforensics.periscope;
 
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class VideoContent {
 
     private File temporaryVideoFile;
 
-    private byte[] content;
-
     private FFmpegProbeResult probeMetadata;
 
-    public VideoContent(File temporaryVideoFile, byte[] content, FFmpegProbeResult probeMetadata) {
+    public VideoContent(File temporaryVideoFile, FFmpegProbeResult probeMetadata) {
         this.temporaryVideoFile = temporaryVideoFile;
-        this.content = content;
         this.probeMetadata = probeMetadata;
     }
 
@@ -22,8 +21,8 @@ public class VideoContent {
         return temporaryVideoFile;
     }
 
-    public byte[] getContent() {
-        return content;
+    public byte[] getContent() throws IOException {
+        return FileUtils.readFileToByteArray(temporaryVideoFile);
     }
 
     public FFmpegProbeResult getProbeMetadata() {
