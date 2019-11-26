@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipException;
 
 public class Periscope {
 
@@ -28,6 +29,10 @@ public class Periscope {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public VideoContent downloadVideo(final Video video) throws IOException {
+        return downloadVideo(video, true);
+    }
+
+    public VideoContent downloadVideo(final Video video, boolean includeProbeData) throws IOException {
         String fileName = UUID.randomUUID().toString();
         File file = File.createTempFile(fileName, ".mp4");
         log.info("Writing video file to temporary file: {}", file.getAbsolutePath());
@@ -39,8 +44,12 @@ public class Periscope {
 
         log.info("Video retrieval complete. Extracting frame data...");
 
-        FFprobe ffprobe = new FFprobe();
-        FFmpegProbeResult probeResult = ffprobe.probe(file.getAbsolutePath());
+
+        FFmpegProbeResult probeResult = null;
+        if (includeProbeData) {
+            FFprobe ffprobe = new FFprobe();
+            probeResult = ffprobe.probe(file.getAbsolutePath());
+        }
 
         return new VideoContent(file, probeResult);
     }
@@ -101,21 +110,26 @@ public class Periscope {
 
     private String processResponse(Response response) throws IOException {
         log.debug("Response: successful={} code={}", response.isSuccessful(), response.code());
+        String json = null;
         if (response.isSuccessful() && response.code() >= 200 && response.code() < 300) {
             String contentEncoding = response.header("Content-Encoding");
             InputStream is;
-            if (contentEncoding != null && !contentEncoding.contains("gzip")) {
-                is = response.body().byteStream();
+            try {
+                if (contentEncoding != null && !contentEncoding.contains("gzip")) {
+                    is = response.body().byteStream();
+                } else {
+                    is = new GZIPInputStream(response.body().byteStream());
+                }
+                json = IOUtils.toString(is, "UTF-8");
+            } catch (ZipException e) {
+                if (e.getMessage().contains("Not in GZIP format")) {
+                    is = response.body().byteStream();
+                    json = IOUtils.toString(is, "UTF-8");
+                }
             }
-            else {
-                is = new GZIPInputStream(response.body().byteStream());
-            }
-            String json = IOUtils.toString(is, "UTF-8");
-
-            return json;
         }
 
-        return null;
+        return json;
     }
 
 
